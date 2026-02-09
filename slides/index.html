@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Slide Decks</title>
+    <style>
+      :root {
+        --bg: #0b1d2a;
+        --fg: #f7f3e9;
+        --accent: #ffb703;
+        --accent-2: #00b4d8;
+        --card: rgba(255, 255, 255, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Alegreya", "Georgia", serif;
+        color: var(--fg);
+        background: radial-gradient(1200px 600px at 20% 10%, #1b4a68, var(--bg));
+      }
+
+      .wrap {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 64px 24px 80px;
+      }
+
+      h1 {
+        font-size: 48px;
+        letter-spacing: 0.02em;
+        margin: 0 0 12px;
+      }
+
+      .subtitle {
+        font-size: 18px;
+        opacity: 0.85;
+        margin-bottom: 32px;
+      }
+
+      .deck-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 20px;
+      }
+
+      .deck {
+        display: block;
+        padding: 20px 22px;
+        border-radius: 14px;
+        background: var(--card);
+        text-decoration: none;
+        color: var(--fg);
+        border: 1px solid transparent;
+        transition: transform 200ms ease, border-color 200ms ease;
+      }
+
+      .deck:hover {
+        transform: translateY(-4px);
+        border-color: var(--accent);
+      }
+
+      .deck-title {
+        font-size: 22px;
+        margin-bottom: 8px;
+      }
+
+      .deck-meta {
+        font-size: 14px;
+        opacity: 0.8;
+      }
+
+      .ribbon {
+        display: inline-block;
+        margin-top: 28px;
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: var(--accent-2);
+        color: #001219;
+        font-weight: 600;
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      @media (max-width: 600px) {
+        h1 {
+          font-size: 36px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <span class="ribbon">Slides</span>
+      <h1>Structured Programming Language</h1>
+      <div class="subtitle">Choose a deck to open.</div>
+
+      <div class="deck-grid">
+        <a class="deck" href="example.html">
+          <div class="deck-title">Reveal.js Example</div>
+          <div class="deck-meta">General demo of Markdown slides</div>
+        </a>
+        <a class="deck" href="simple-expressions.html">
+          <div class="deck-title">Simple Expressions</div>
+          <div class="deck-meta">Literals, operators, and precedence</div>
+        </a>
+      </div>
+    </div>
+  </body>
+</html>

@@ -109,6 +109,11 @@ def test_parse_expression():
     }
     assert tokens == [{"column": 8, "line": 1, "tag": None}]
 
+def parse(tokens):
+    ast, tokens = parse_expression(tokens)
+    if tokens[0]["tag"] is not None:
+        raise SyntaxError(f"Unexpected token: {tokens[0]}")
+    return ast
 
 if __name__ == "__main__":
     test_parse_factor()
