@@ -10,7 +10,7 @@ from pprint import pprint
 
 patterns = [
     (r"\s+", "whitespace"),
-    (r"\d+", "number"),
+    (r"(?<!\d)\-?\d+", "number"),
     (r"\+", "+"),
     (r"\-", "-"),
     (r"\/", "/"),
