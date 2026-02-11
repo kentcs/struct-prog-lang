@@ -47,6 +47,8 @@ def test_evaluate():
     assert evaluate(ast) == 23
     ast = parse(tokenize("5%-6--7"))
     assert evaluate(ast) == 6
+    ast = parse(tokenize("-5%6+-7"))
+    assert evaluate(ast) == -6
     
 
 if __name__ == "__main__":
