@@ -1,5 +1,6 @@
 import parser, tokenizer
 
+
 def evaluate(ast):
     if ast["tag"] == "number":
         return ast["value"]
@@ -13,6 +14,7 @@ def evaluate(ast):
         return evaluate(ast["left"]) / evaluate(ast["right"])
     else:
         raise ValueError(f"Unknown AST node: {ast}")
+
 
 def test_evaluate():
     print("test evaluate()")
@@ -37,6 +39,7 @@ def test_evaluate():
     tokens = tokenizer.tokenize("3*(4+5)")
     ast, tokens = parser.parse_expression(tokens)
     assert evaluate(ast) == 27
+
 
 if __name__ == "__main__":
     test_evaluate()
