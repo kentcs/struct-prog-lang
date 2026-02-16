@@ -33,9 +33,12 @@ def test_parse_factor():
     assert tokens == [{"tag": None, "line": 1, "column": 2}]
     tokens = tokenize("(3+4)")
     ast, tokens = parse_factor(tokens)
-    assert ast == {'tag': '+', 'left': {'tag': 'number', 'value': 3}, 'right': {'tag': 'number', 'value': 4}} 
-    assert tokens == [{'tag': None, 'line': 1, 'column': 6}]
-
+    assert ast == {
+        "tag": "+",
+        "left": {"tag": "number", "value": 3},
+        "right": {"tag": "number", "value": 4},
+    }
+    assert tokens == [{"tag": None, "line": 1, "column": 6}]
 
 
 def parse_term(tokens):
@@ -119,11 +122,13 @@ def test_parse_expression():
     }
     assert tokens == [{"column": 8, "line": 1, "tag": None}]
 
+
 def parse(tokens):
     ast, tokens = parse_expression(tokens)
     if tokens[0]["tag"] is not None:
         raise SyntaxError(f"Unexpected token: {tokens[0]}")
     return ast
+
 
 if __name__ == "__main__":
     test_parse_factor()
