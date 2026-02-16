@@ -99,8 +99,22 @@ def test_expressions():
     assert t[3]["tag"] == "*"
     assert t[4]["tag"] == "number" and t[4]["value"] == 3
     assert t[5]["tag"] is None
+    t = tokenize("1%2")
+    assert t[0]["tag"] == "number" and t[0]["value"] == 1
+    assert t[1]["tag"] == "%"
+    assert t[2]["tag"] == "number" and t[2]["value"] == 2
+    assert t[3]["tag"] is None
     t = tokenize("1%222*(2*3)")
-    print(t)
+    assert t[0]["tag"] == "number" and t[0]["value"] == 1
+    assert t[1]["tag"] == "%"
+    assert t[2]["tag"] == "number" and t[2]["value"] == 222
+    assert t[3]["tag"] == "*"
+    assert t[4]["tag"] == "("
+    assert t[5]["tag"] == "number" and t[5]["value"] == 2
+    assert t[6]["tag"] == "*"
+    assert t[7]["tag"] == "number" and t[7]["value"] == 3
+    assert t[8]["tag"] == ")"
+    assert t[9]["tag"] is None
 
 
 def test_whitespace():

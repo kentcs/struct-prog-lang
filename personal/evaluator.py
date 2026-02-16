@@ -51,6 +51,9 @@ def test_evaluate():
     tokens = tokenizer.tokenize("-5%-6+-7")
     ast, tokens = parser.parse_expression(tokens)
     assert evaluate(ast) == -12
+    tokens = tokenizer.tokenize("-5%(-6+-7)")
+    ast, tokens = parser.parse_expression(tokens)
+    assert evaluate(ast) == -5
 
 if __name__ == "__main__":
     test_evaluate()

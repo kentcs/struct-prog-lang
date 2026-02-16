@@ -129,6 +129,22 @@ def test_parse_expression():
         "tag": "-",
     }
     assert tokens == [{"column": 8, "line": 1, "tag": None}]
+    tokens = tokenize("3*4+5%6")
+    ast, tokens = parse_expression(tokens)
+    assert ast == {
+        "left": {
+            "left": {"tag": "number", "value": 3},
+            "right": {"tag": "number", "value": 4},
+            "tag": "*"
+        },
+        "right": {
+            "left": {"tag": "number", "value": 5},
+            "right": {"tag": "number", "value": 6},
+            "tag": "%"
+        },
+        "tag": "+"
+    }
+    assert tokens == [{"column": 8, "line": 1, "tag": None}]
 
 def parse(tokens):
     ast, tokens = parse_expression(tokens)
