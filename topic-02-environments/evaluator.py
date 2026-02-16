@@ -1,17 +1,22 @@
 import parser, tokenizer
 
-
-def evaluate(ast):
+def evaluate(ast, env = {}):
     if ast["tag"] == "number":
         return ast["value"]
+    elif ast["tag"] == "identifier":
+        identifier = ast["value"]
+        if identifier in env:
+            return env[identifier]
+        else:
+            raise ValueError(f"Unknown identifier: {identifier}")
     elif ast["tag"] == "+":
-        return evaluate(ast["left"]) + evaluate(ast["right"])
+        return evaluate(ast["left"], env) + evaluate(ast["right"], env)
     elif ast["tag"] == "-":
-        return evaluate(ast["left"]) - evaluate(ast["right"])
+        return evaluate(ast["left"], env) - evaluate(ast["right"], env)
     elif ast["tag"] == "*":
-        return evaluate(ast["left"]) * evaluate(ast["right"])
+        return evaluate(ast["left"], env) * evaluate(ast["right"], env)
     elif ast["tag"] == "/":
-        return evaluate(ast["left"]) / evaluate(ast["right"])
+        return evaluate(ast["left"], env) / evaluate(ast["right"], env)
     else:
         raise ValueError(f"Unknown AST node: {ast}")
 
@@ -40,7 +45,21 @@ def test_evaluate():
     ast, tokens = parser.parse_expression(tokens)
     assert evaluate(ast) == 27
 
+def test_evaluate_environments():
+    print("test evaluate() with environments")
+    ast = {"tag": "identifier", "value": "x"}
+    assert evaluate(ast, {"x":3}) == 3
+    tokens = tokenizer.tokenize("3*(x+5)")
+    ast, tokens = parser.parse_expression(tokens)
+    env = {"x":4}
+    assert evaluate(ast, env) == 27
+    try:
+        assert evaluate(ast, {}) == 27
+        assert True, "Failed to raise error for undefined identifier"
+    except Exception as e:
+        assert "Unknown identifier" in str(e)
 
 if __name__ == "__main__":
     test_evaluate()
+    test_evaluate_environments()
     print("done.")

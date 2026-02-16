@@ -90,6 +90,7 @@ def test_identifiers():
     tags = [tok["tag"] for tok in t]
     assert tags == ["identifier", "identifier", "identifier", None]
     assert t[0]["value"] == "foo"
+    assert t[2]["value"] == "baz"
 
 
 def test_expressions():
