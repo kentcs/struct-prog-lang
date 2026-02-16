@@ -73,13 +73,21 @@ def test_digits():
     assert t[0]["tag"] == "number"
     assert t[0]["value"] == 1
     assert t[1]["tag"] is None
+    t = tokenize("-1")
+    assert t[0]["tag"] == "number"
+    assert t[0]["value"] == -1
+    assert t[1]["tag"] is None
+    t = tokenize("-123")
+    assert t[0]["tag"] == "number"
+    assert t[0]["value"] == -123
+    assert t[1]["tag"] is None
 
 
 def test_operators():
     print("test tokenize operators")
-    t = tokenize("+ - * / ( )")
+    t = tokenize("+ - * / % ( )")
     tags = [tok["tag"] for tok in t]
-    assert tags == ["+", "-", "*", "/", "(", ")", None]
+    assert tags == ["+", "-", "*", "/", "%", "(", ")", None]
 
 
 def test_expressions():
@@ -91,6 +99,8 @@ def test_expressions():
     assert t[3]["tag"] == "*"
     assert t[4]["tag"] == "number" and t[4]["value"] == 3
     assert t[5]["tag"] is None
+    t = tokenize("1%222*(2*3)")
+    print(t)
 
 
 def test_whitespace():

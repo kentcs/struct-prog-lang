@@ -11,7 +11,7 @@ from pprint import pprint
 
 
 def parse_factor(tokens):
-    """factor = <number>"""
+    """factor = <number> | \"(\" expression \")\""""
     token = tokens[0]
     if token["tag"] == "number":
         node = {"tag": "number", "value": token["value"]}
@@ -25,7 +25,7 @@ def parse_factor(tokens):
 
 
 def test_parse_factor():
-    """factor = <number>"""
+    """factor = <number> | \"(\" expression \")\""""
     print("test parse_factor()")
     tokens = tokenize("3")
     ast, tokens = parse_factor(tokens)
@@ -86,8 +86,14 @@ def test_parse_term():
     tokens = tokenize("3%4*-5")
     ast, tokens = parse_term(tokens)
     assert ast == {
-         "left": {
-             "left": {"tag": "number", "value": 3}
+        "left": {
+            "left": {"tag": "number", "value": 3},
+            "right": {"tag": "number", "value": 4},
+            "tag": "%",
+        },
+        "right": {"tag": "number", "value": -5},
+        "tag": "*"
+    }
 
 
 def parse_expression(tokens):

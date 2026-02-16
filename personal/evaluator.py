@@ -11,6 +11,8 @@ def evaluate(ast):
         return evaluate(ast["left"]) * evaluate(ast["right"])
     elif ast["tag"] == "/":
         return evaluate(ast["left"]) / evaluate(ast["right"])
+    elif ast["tag"] == "%":
+        return evaluate(ast["left"]) % evaluate(ast["right"])
     else:
         raise ValueError(f"Unknown AST node: {ast}")
 
@@ -37,6 +39,18 @@ def test_evaluate():
     tokens = tokenizer.tokenize("3*(4+5)")
     ast, tokens = parser.parse_expression(tokens)
     assert evaluate(ast) == 27
+    tokens = tokenizer.tokenize("5%-6--7")
+    ast, tokens = parser.parse_expression(tokens)
+    assert evaluate(ast) == 6
+    tokens = tokenizer.tokenize("5%(-6--7)")
+    ast, tokens = parser.parse_expression(tokens)
+    assert evaluate(ast) == 0
+    tokens = tokenizer.tokenize("-5%6--7")
+    ast, tokens = parser.parse_expression(tokens)
+    assert evaluate(ast) == 8
+    tokens = tokenizer.tokenize("-5%-6+-7")
+    ast, tokens = parser.parse_expression(tokens)
+    assert evaluate(ast) == -12
 
 if __name__ == "__main__":
     test_evaluate()
