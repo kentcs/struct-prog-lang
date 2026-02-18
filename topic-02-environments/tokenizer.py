@@ -17,7 +17,9 @@ patterns = [
     (r"\*", "*"),
     (r"\(", "("),
     (r"\)", ")"),
-    (r"[a-zA-Z_][a-zA-Z0-9_]*", "identifier"),
+    (r"\=", "="),
+    (r"print\b","print"),
+    (r"[a-zA-Z_][\w]*", "identifier"),
     (r".", "error"),
 ]
 
@@ -79,10 +81,15 @@ def test_digits():
 
 def test_operators():
     print("test tokenize operators")
-    t = tokenize("+ - * / ( )")
+    t = tokenize("+ - * / ( ) =")
     tags = [tok["tag"] for tok in t]
-    assert tags == ["+", "-", "*", "/", "(", ")", None]
+    assert tags == ["+", "-", "*", "/", "(", ")","=", None]
 
+def test_operators():
+    print("test tokenize keywords")
+    t = tokenize("print")
+    tags = [tok["tag"] for tok in t]
+    assert tags == ["print", None]
 
 def test_identifiers():
     print("test tokenize identifiers")

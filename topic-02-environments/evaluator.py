@@ -9,6 +9,10 @@ def evaluate(ast, environment):
             return environment[identifier]
         else:
             raise ValueError(f"Unknown identifier: {identifier}")
+    elif ast["tag"] == "assign":
+        value = evaluate(ast["expression"], environment)
+        environment[ast["target"]] = value
+        return None
     elif ast["tag"] == "+":
         return evaluate(ast["left"], environment) + evaluate(ast["right"], environment)
     elif ast["tag"] == "-":
@@ -58,8 +62,17 @@ def test_evaluate_environments():
     except Exception as e:
         assert "Unknown identifier" in str(e) 
 
+def test_evaluate_assignments():
+    tokens = tokenizer.tokenize("z=3*(x+5)")
+    ast, tokens = parser.parse_statement(tokens)
+    environment = {"x":4}
+    assert evaluate(ast,environment) == None
+    print(environment)
+    assert environment=={'x': 4, 'z': 27}
+
 
 if __name__ == "__main__":
     test_evaluate()
     test_evaluate_environments()
+    test_evaluate_assignments()
     print("done.")
