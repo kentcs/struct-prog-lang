@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Structured Programming Languages</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+
+        .toc-section {
+            margin-bottom: 30px;
+        }
+
+        .toc-section h2 {
+            color: #764ba2;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 8px;
+        }
+
+        .toc-link {
+            display: block;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            text-decoration: none;
+            color: #333;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .toc-link:hover {
+            background: #e7e9ff;
+            border-left-color: #764ba2;
+            transform: translateX(4px);
+        }
+
+        .description {
+            color: #666;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" style="max-width: 600px">
+        <h1>📚 Structured Programming Languages</h1>
+
+        <div class="toc-section">
+            <h2>Slide Decks</h2>
+            <a href="slides/topic-01-expressions.html" class="toc-link">
+                Topic 01: Simple Expressions
+                <div class="description">Literals, operators, precedence, and the tokenizer → parser → evaluator
+                    pipeline</div>
+            </a>
+        </div>
+
+        <div class="toc-section">
+            <h2>Notes</h2>
+            <a href="notes/notes-regex.pdf" class="toc-link">
+                Regex Reference
+                <div class="description">Regular expressions, patterns, and tokenization</div>
+            </a>
+            <a href="notes/notes-EBNF.pdf" class="toc-link">
+                EBNF Reference
+                <div class="description">Extended Backus-Naur Form notation and grammar concepts</div>
+            </a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
