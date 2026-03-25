@@ -11,7 +11,8 @@ from pprint import pprint
 #   if_statement = "if" "(" expression ")" "{" statement_list "}" [ "else" "{" statement_list "}" ]
 #   while_statement = "while" "(" expression ")" "{" statement_list "}"
 #   assignment_statement = <identifier> "=" expression
-#   statement = print_statement | if_statement | while_statement | assignment_statement
+#   function_statement = "function" identifier "(" [ identifier { "," identifier } ] ")" "{" statement_list "}"
+#   statement = print_statement | if_statement | while_statement | function_statement | assignment_statement
 
 #   expression = logic_or
 #   logic_or   = logic_and { ("or" | "||")  logic_and }
@@ -145,6 +146,22 @@ def parse_function_expression(tokens):
         "body": body,
     }, tokens
 
+
+def parse_function_statement(tokens):
+    # function_statement = "function" identifier "(" [ identifier { "," identifier } ] ")" "{" statement_list "}"
+    assert tokens[0]["tag"] == "function", "Expected 'function'"
+    tokens = tokens[1:]
+    assert tokens[0]["tag"] == "identifier", "Expected function name"
+    identifier_token = tokens[0]
+    tokens = tokens[1:]
+    # Rewrite the token stream into an assignment to a function expression.
+    tokens = [
+        identifier_token,
+        {"tag": "=", "value": "="},
+        {"tag": "function", "value": "function"},
+    ] + tokens
+    return parse_assignment_statement(tokens)
+
 def test_parse_function_expression():
     print("test parse_function_expression()")
     tokens = tokenize("function(){}")
@@ -219,6 +236,31 @@ def test_parse_factor():
     ast, tokens = parse_factor(tokens)
     assert ast["tag"] == "function"
     assert ast["parameters"] == ["x", "y"]
+    assert tokens[0]["tag"] == None
+
+
+def test_parse_function_statement():
+    print("test parse_function_statement()")
+    tokens = tokenize("function f(x){y=1}")
+    ast, tokens = parse_function_statement(tokens)
+    assert ast == {
+        "tag": "assign",
+        "target": "f",
+        "expression": {
+            "tag": "function",
+            "parameters": ["x"],
+            "body": {
+                "tag": "statement_list",
+                "statements": [
+                    {
+                        "tag": "assign",
+                        "target": "y",
+                        "expression": {"tag": "number", "value": 1},
+                    }
+                ],
+            },
+        },
+    }
     assert tokens[0]["tag"] == None
     # ===== END TOPIC-05 CHANGES =====
 
@@ -669,13 +711,15 @@ def test_parse_assignment_statement():
 
 
 def parse_statement(tokens):
-    # statement = print_statement | if_statement | while_statement | assignment_statement
+    # statement = print_statement | if_statement | while_statement | function_statement | assignment_statement
     if tokens[0]["tag"] == "print":
         return parse_print_statement(tokens)
     if tokens[0]["tag"] == "if":
         return parse_if_statement(tokens)
     if tokens[0]["tag"] == "while":
         return parse_while_statement(tokens)
+    if tokens[0]["tag"] == "function":
+        return parse_function_statement(tokens)
     if tokens[0]["tag"] == "identifier":
         return parse_assignment_statement(tokens)
     raise SyntaxError(f"Expected statement, got {tokens[0]}")
@@ -874,5 +918,6 @@ if __name__ == "__main__":
     test_parse_statement_list()
     test_parse_program()
     test_parse_function_expression()
+    test_parse_function_statement()
     test_parse()
     print("done.")
