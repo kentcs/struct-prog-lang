@@ -29,6 +29,7 @@ def evaluate(ast, environment):
             parameter: argument
             for parameter, argument in zip(function["parameters"], argument_values)
         }
+        local_environment["$PARENT"] = environment
         evaluate(function["body"], local_environment)
         return None
 
@@ -343,6 +344,15 @@ def test_evaluate_function_call():
         ast, tokens = parser.parse_expression(tokens)
         assert evaluate(ast, environment) == None
     assert buffer.getvalue() == "2\n"
+
+    # Dynamic binding should resolve free variables from the caller's environment.
+    buffer = io.StringIO()
+    with contextlib.redirect_stdout(buffer):
+        tokens = tokenizer.tokenize("x=3;f=function(){print x};g=function(){x=4;print f()};print g()")
+        ast, tokens = parser.parse_statement_list(tokens)
+        environment = {}
+        assert evaluate(ast, environment) == None
+    assert buffer.getvalue().splitlines()[0] == "4"
     return
 
 
