@@ -25,7 +25,11 @@ def evaluate(ast, environment):
         function = evaluate(ast["function"], environment)
         argument_values = [evaluate(argument, environment) for argument in ast["arguments"]]
         assert len(argument_values) == len(function["parameters"])
-        evaluate(function["body"], environment)
+        local_environment = {
+            parameter: argument
+            for parameter, argument in zip(function["parameters"], argument_values)
+        }
+        evaluate(function["body"], local_environment)
         return None
 
     elif ast["tag"] == "identifier":
@@ -324,6 +328,21 @@ def test_evaluate_function_call():
         assert str(e) == "Unknown identifier: y"
     else:
         raise Exception("Expected unknown identifier in call argument")
+
+    import contextlib
+    import io
+
+    # Parameter binding should make the argument value visible inside the function body.
+    buffer = io.StringIO()
+    with contextlib.redirect_stdout(buffer):
+        environment = {}
+        tokens = tokenizer.tokenize("f=function(x){print x}")
+        ast, tokens = parser.parse_statement_list(tokens)
+        assert evaluate(ast, environment) == None
+        tokens = tokenizer.tokenize("f(2)")
+        ast, tokens = parser.parse_expression(tokens)
+        assert evaluate(ast, environment) == None
+    assert buffer.getvalue() == "2\n"
     return
 
 
