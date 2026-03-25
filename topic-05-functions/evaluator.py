@@ -22,13 +22,9 @@ def evaluate(ast, environment):
     elif ast["tag"] == "function":
         return ast
     elif ast["tag"] == "call":
-        assert "function" in ast
-        print(ast)
         function = evaluate(ast["function"], environment)
-        print(function)
-        print(ast["arguments"])
-        print(function["parameters"])
-        assert len(ast["arguments"]) == len(function["parameters"])
+        argument_values = [evaluate(argument, environment) for argument in ast["arguments"]]
+        assert len(argument_values) == len(function["parameters"])
         evaluate(function["body"], environment)
         return None
 
@@ -318,10 +314,17 @@ def test_evaluate_function_call():
     environment = {"x": 4}
     tokens = tokenizer.tokenize("x=function(x,y){print(314159)}")
     ast, tokens = parser.parse_statement_list(tokens)
-    tokens = tokenizer.tokenize("x(012345,67890)")
-    ast, tokens = parser.parse_statement_list(tokens)
-    assert evaluate(ast, environment) == None
-    exit(0)
+    evaluate(ast, environment)
+    tokens = tokenizer.tokenize("x(y,67890)")
+    # This is a function call expression, not a statement list.
+    ast, tokens = parser.parse_expression(tokens)
+    try:
+        evaluate(ast, environment)
+    except ValueError as e:
+        assert str(e) == "Unknown identifier: y"
+    else:
+        raise Exception("Expected unknown identifier in call argument")
+    return
 
 
 if __name__ == "__main__":
