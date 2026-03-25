@@ -26,12 +26,18 @@ def evaluate(ast, environment):
         print(ast)
         function = evaluate(ast["function"], environment)
         print(function)
-        print(ast["arguments"])
         print(function["parameters"])
-        assert len(ast["arguments"]) == len(function["parameters"])
-        evaluate(function["body"], environment)
+        print(ast["arguments"])
+        argument_values = [evaluate(argument, environment) for argument in ast["arguments"]]
+        assert len(argument_values) == len(function["parameters"])
+        local_environment = {
+            "$PARENT": environment
+        }
+        for i in range(0, len(function["parameters"])):
+            local_environment[function["parameters"][i]] = argument_values[i]
+        print("LOCAL =", local_environment)
+        evaluate(function["body"], local_environment)
         return None
-
     elif ast["tag"] == "identifier":
         identifier = ast["value"]
         env = environment
@@ -316,12 +322,26 @@ def test_evaluate_function_call():
     print(environment)
     assert environment == {'x': {'tag': 'function', 'parameters': ['x'], 'body': {'tag': 'statement_list', 'statements': [{'tag': 'print', 'expression': {'tag': 'number', 'value': 314159}}]}}, 'z': None}
     environment = {"x": 4}
-    tokens = tokenizer.tokenize("x=function(x,y){print(314159)}")
-    ast, tokens = parser.parse_statement_list(tokens)
-    tokens = tokenizer.tokenize("x(012345,67890)")
+    tokens = tokenizer.tokenize("f=function(x,y){print(314159)}")
     ast, tokens = parser.parse_statement_list(tokens)
     assert evaluate(ast, environment) == None
-    exit(0)
+    tokens = tokenizer.tokenize("z=f(012345,67890)")
+    ast, tokens = parser.parse_statement_list(tokens)
+    assert evaluate(ast, environment) == None
+
+    tokens = tokenizer.tokenize("f=function(x,y){print(x+y)}")
+    ast, tokens = parser.parse_statement_list(tokens)
+    assert evaluate(ast, environment) == None
+    tokens = tokenizer.tokenize("z=f(1+2,3+4)")
+    ast, tokens = parser.parse_statement_list(tokens)
+    assert evaluate(ast, environment) == None
+
+    tokens = tokenizer.tokenize("x = 100; f=function(q,r){print(q+r+x)}")
+    ast, tokens = parser.parse_statement_list(tokens)
+    assert evaluate(ast, environment) == None
+    tokens = tokenizer.tokenize("z=f(1+2,3+4)")
+    ast, tokens = parser.parse_statement_list(tokens)
+    assert evaluate(ast, environment) == None
 
 
 if __name__ == "__main__":
