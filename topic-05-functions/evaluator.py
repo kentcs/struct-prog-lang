@@ -20,7 +20,12 @@ def evaluate(ast, environment):
     elif ast["tag"] == "false":
         return False
     elif ast["tag"] == "function":
-        return ast
+        return {
+            "tag": "function",
+            "parameters": ast["parameters"],
+            "body": ast["body"],
+            "environment": environment,
+        }
     elif ast["tag"] == "call":
         function = evaluate(ast["function"], environment)
         argument_values = [evaluate(argument, environment) for argument in ast["arguments"]]
@@ -29,7 +34,7 @@ def evaluate(ast, environment):
             parameter: argument
             for parameter, argument in zip(function["parameters"], argument_values)
         }
-        local_environment["$PARENT"] = environment
+        local_environment["$PARENT"] = function["environment"]
         evaluate(function["body"], local_environment)
         return None
 
@@ -307,7 +312,19 @@ def test_evaluate_function_expression():
     ast, tokens = parser.parse_statement_list(tokens)
     environment = {"x": 4}
     assert evaluate(ast, environment) == None
-    assert environment == {'x': {'tag': 'function', 'parameters': ['x'], 'body': {'tag': 'statement_list', 'statements': [{'tag': 'assign', 'target': 'y', 'expression': {'tag': 'number', 'value': 1}}]}}}
+    assert environment["x"]["tag"] == "function"
+    assert environment["x"]["parameters"] == ["x"]
+    assert environment["x"]["environment"] is environment
+    assert environment["x"]["body"] == {
+        "tag": "statement_list",
+        "statements": [
+            {
+                "tag": "assign",
+                "target": "y",
+                "expression": {"tag": "number", "value": 1},
+            }
+        ],
+    }
 
 def test_evaluate_function_call():
     tokens = tokenizer.tokenize("x=function(x){print(314159);};z=x(2)")
@@ -315,7 +332,9 @@ def test_evaluate_function_call():
     environment = {"x": 4}
     assert evaluate(ast, environment) == None
     print(environment)
-    assert environment == {'x': {'tag': 'function', 'parameters': ['x'], 'body': {'tag': 'statement_list', 'statements': [{'tag': 'print', 'expression': {'tag': 'number', 'value': 314159}}]}}, 'z': None}
+    assert environment["x"]["tag"] == "function"
+    assert environment["x"]["environment"] is environment
+    assert environment["z"] == None
     environment = {"x": 4}
     tokens = tokenizer.tokenize("x=function(x,y){print(314159)}")
     ast, tokens = parser.parse_statement_list(tokens)
@@ -352,7 +371,7 @@ def test_evaluate_function_call():
         ast, tokens = parser.parse_statement_list(tokens)
         environment = {}
         assert evaluate(ast, environment) == None
-    assert buffer.getvalue().splitlines()[0] == "4"
+    assert buffer.getvalue().splitlines()[0] == "3"
     return
 
 
