@@ -29,19 +29,15 @@ def evaluate(ast, environment):
         print(function["parameters"])
         print(ast["arguments"])
         argument_values = [evaluate(argument, environment) for argument in ast["arguments"]]
-        print(argument_values)
         assert len(argument_values) == len(function["parameters"])
-        print(function["body"])
         local_environment = {
-            "$PARENT" : environment
+            "$PARENT": environment
         }
-        for i in range(0,len(function["parameters"])):
+        for i in range(0, len(function["parameters"])):
             local_environment[function["parameters"][i]] = argument_values[i]
-        print("LOCAL = ",local_environment)
+        print("LOCAL =", local_environment)
         evaluate(function["body"], local_environment)
-        
         return None
-
     elif ast["tag"] == "identifier":
         identifier = ast["value"]
         env = environment
