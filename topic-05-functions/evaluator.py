@@ -329,20 +329,19 @@ def test_evaluate_function_call():
     ast, tokens = parser.parse_statement_list(tokens)
     assert evaluate(ast, environment) == None
 
-    tokens = tokenizer.tokenize("f=function(x,y){print(x+y)}")
+    tokens = tokenizer.tokenize("f=function(q,r){print(q+r)}")
     ast, tokens = parser.parse_statement_list(tokens)
     assert evaluate(ast, environment) == None
     tokens = tokenizer.tokenize("z=f(1+2,3+4)")
     ast, tokens = parser.parse_statement_list(tokens)
     assert evaluate(ast, environment) == None
 
-    tokens = tokenizer.tokenize("x = 100; f=function(q,r){print(q+r+x)}")
+    tokens = tokenizer.tokenize("x=100; f=function(q,r){print(q+r+x)}")
     ast, tokens = parser.parse_statement_list(tokens)
     assert evaluate(ast, environment) == None
     tokens = tokenizer.tokenize("z=f(1+2,3+4)")
     ast, tokens = parser.parse_statement_list(tokens)
     assert evaluate(ast, environment) == None
-
 
 if __name__ == "__main__":
     test_evaluate()
