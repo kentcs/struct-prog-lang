@@ -4,7 +4,7 @@ from tokenizer import tokenize
 from parser import parse
 from evaluator import evaluate
 
-if __name__ == "__main__":
+if __name__ == "__main__":  
     if len(sys.argv) != 2:
         print("Usage: python runner.py <expression>")
         sys.exit(1)
@@ -14,4 +14,5 @@ if __name__ == "__main__":
             expression = f.read().strip()
     tokens = tokenize(expression)
     ast = parse(tokens)
-    evaluate(ast, {})
+    result = evaluate(ast)
+    print(result)

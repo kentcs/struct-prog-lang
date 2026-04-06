@@ -412,8 +412,7 @@ Tokenizer -> Parser -> Evaluator -> Output
 
 ## Next Steps
 
-- Conditional statements (if)
-- Loops (while)
-- Nested scopes
-- Functions
-- More data types
+- Comparison operators (`==`, `!=`, `<`, `>`, etc.)
+- Logical operators (`and`, `or`, `not`)
+- Boolean values (`true`, `false`)
+- More complex expressions

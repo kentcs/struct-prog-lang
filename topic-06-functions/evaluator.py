@@ -14,23 +14,29 @@ def is_truthy(value):
 
 def evaluate(ast, environment):
     if ast["tag"] == "number":
-        return ast["value"]
+        return ast["value"], None
     elif ast["tag"] == "true":
-        return True
+        return True, None
     elif ast["tag"] == "false":
-        return False
+        return False, None
     elif ast["tag"] == "function":
         return {
             "tag": "function",
             "parameters": ast["parameters"],
             "body": ast["body"],
             "environment": environment,
-        }
+        }, None
     elif ast["tag"] == "call":
-        function = evaluate(ast["function"], environment)
-        argument_values = [
-            evaluate(argument, environment) for argument in ast["arguments"]
-        ]
+        function, status = evaluate(ast["function"], environment)
+        if status is not "return":
+            return function, status
+        argument_values = []
+        for argument in ast["arguments"]:
+            argument_value, status = evaluate(argument, environment)
+            if status is not None:
+                return argument_value, status
+            argument_values.append(argument_value)
+            
         assert len(argument_values) == len(function["parameters"])
         local_environment = {
             parameter: argument
@@ -41,105 +47,210 @@ def evaluate(ast, environment):
 
         # Static binding version for later:
         local_environment["$PARENT"] = function["environment"]
-        evaluate(function["body"], local_environment)
-        return None
-
+        body_value, status = evaluate(function["body"], local_environment)
+        if status == "return":
+            set status = None
+        return body_value, status
+    elif ast["tag"] == "return":
+        if "expression" in ast:
+            value, status = evaluate(ast["expression"], environment)
+            return value, "return"
     elif ast["tag"] == "identifier":
         identifier = ast["value"]
         env = environment
         while True:
             if identifier in env:
-                return env[identifier]
+                return env[identifier], None
             if "$PARENT" in env:
                 env = env["$PARENT"]
                 continue
             else:
                 raise ValueError(f"Unknown identifier: {identifier}")
     elif ast["tag"] == "assign":
-        value = evaluate(ast["expression"], environment)
+        value, status = evaluate(ast["expression"], environment)
+        if status is not None:
+            return value, status
         environment[ast["target"]] = value
-        return None
+        return None, None
     elif ast["tag"] == "+":
-        return evaluate(ast["left"], environment) + evaluate(ast["right"], environment)
+        left, status = evaluate(ast["left"], environment)
+        if status is not None:
+            return left, status
+        right, status = evaluate(ast["right"], environment)
+        if status is not None:
+            return right, status
+        return left + right, None
     elif ast["tag"] == "-":
-        return evaluate(ast["left"], environment) - evaluate(ast["right"], environment)
+        left, status = evaluate(ast["left"], environment)
+        if status is not None:
+            return left, status
+        right, status = evaluate(ast["right"], environment)
+        if status is not None:
+            return right, status
+        return left - right, None
     elif ast["tag"] == "*":
-        return evaluate(ast["left"], environment) * evaluate(ast["right"], environment)
+        left, status = evaluate(ast["left"], environment)
+        if status is not None:
+            return left, status
+        right, status = evaluate(ast["right"], environment)
+        if status is not None:
+            return right, status
+        return left * right, None
     elif ast["tag"] == "/":
-        return evaluate(ast["left"], environment) / evaluate(ast["right"], environment)
+        left, status = evaluate(ast["left"], environment)
+        if status is not None:
+            return left, status
+        right, status = evaluate(ast["right"], environment)
+        if status is not None:
+            return right, status
+        return left / right, None
     elif ast["tag"] == "unary-":
-        return -evaluate(ast["operand"], environment)
+        value, status = evaluate(ast["operand"], environment)
+        if status is not None:
+            return value, status
+        return -value, None
     elif ast["tag"] == "==":
-        return evaluate(ast["left"], environment) == evaluate(ast["right"], environment)
+        left, status = evaluate(ast["left"], environment)
+        if status is not None:
+            return left, status
+        right, status = evaluate(ast["right"], environment)
+        if status is not None:
+            return right, status
+        return left == right, None
     elif ast["tag"] == "!=":
-        return evaluate(ast["left"], environment) != evaluate(ast["right"], environment)
+        left, status = evaluate(ast["left"], environment)
+        if status is not None:
+            return left, status
+        right, status = evaluate(ast["right"], environment)
+        if status is not None:
+            return right, status
+        return left != right, None
     elif ast["tag"] == "<":
-        return evaluate(ast["left"], environment) < evaluate(ast["right"], environment)
+        left, status = evaluate(ast["left"], environment)
+        if status is not None:
+            return left, status
+        right, status = evaluate(ast["right"], environment)
+        if status is not None:
+            return right, status
+        return left < right, None
     elif ast["tag"] == "<=":
-        return evaluate(ast["left"], environment) <= evaluate(ast["right"], environment)
+        left, status = evaluate(ast["left"], environment)
+        if status is not None:
+            return left, status
+        right, status = evaluate(ast["right"], environment)
+        if status is not None:
+            return right, status
+        return left <= right, None
     elif ast["tag"] == ">":
-        return evaluate(ast["left"], environment) > evaluate(ast["right"], environment)
+        left, status = evaluate(ast["left"], environment)
+        if status is not None:
+            return left, status
+        right, status = evaluate(ast["right"], environment)
+        if status is not None:
+            return right, status
+        return left > right, None
     elif ast["tag"] == ">=":
-        return evaluate(ast["left"], environment) >= evaluate(ast["right"], environment)
+        left, status = evaluate(ast["left"], environment)
+        if status is not None:
+            return left, status
+        right, status = evaluate(ast["right"], environment)
+        if status is not None:
+            return right, status
+        return left >= right, None
     elif ast["tag"] == "and":
-        left = evaluate(ast["left"], environment)
+        left, status = evaluate(ast["left"], environment)
+        if status is not None:
+            return left, status
         if not is_truthy(left):
-            return False
-        right = evaluate(ast["right"], environment)
-        return is_truthy(right)
+            return False, None
+        right, status = evaluate(ast["right"], environment)
+        if status is not None:
+            return right, status
+        return is_truthy(right), None
     elif ast["tag"] == "or":
-        left = evaluate(ast["left"], environment)
+        left, status = evaluate(ast["left"], environment)
+        if status is not None:
+            return left, status
         if is_truthy(left):
-            return True
-        right = evaluate(ast["right"], environment)
-        return is_truthy(right)
+            return True, None
+        right, status = evaluate(ast["right"], environment)
+        if status is not None:
+            return right, status
+        return is_truthy(right), None
     elif ast["tag"] == "not":
-        value = evaluate(ast["operand"], environment)
-        return not is_truthy(value)
+        value, status = evaluate(ast["operand"], environment)
+        if status is not None:
+            return value, status
+        return not is_truthy(value), None
     elif ast["tag"] == "print":
-        result = evaluate(ast["expression"], environment)
+        result, status = evaluate(ast["expression"], environment)
+        if status is not None:
+            return result, status
         print(result)
-        return None
+        return None, None
     elif ast["tag"] == "if":
-        condition = evaluate(ast["condition"], environment)
+        condition, status = evaluate(ast["condition"], environment)
+        if status is not None:
+            return condition, status
         if is_truthy(condition):
-            evaluate(ast["then_block"], environment)
+            then_value, status = evaluate(ast["then_block"], environment)
+            if status is not None:
+                return then_value, status
         else:
             if "else_block" in ast:
-                evaluate(ast["else_block"], environment)
-        return None
+                else_value, status = evaluate(ast["else_block"], environment)
+                if status is not None:
+                    return else_value, status
+        return None, None
     elif ast["tag"] == "while":
-        while is_truthy(evaluate(ast["condition"], environment)):
-            evaluate(ast["do_block"], environment)
-        return None
+        while True:
+            condition, status = evaluate(ast["condition"], environment)
+            if status is not None:
+                return condition, status
+            if not is_truthy(condition):
+                break
+            body_value, status = evaluate(ast["do_block"], environment)
+            if status is not None:
+                return body_value, status
+        return None, None
     elif ast["tag"] == "statement_list":
         for statement in ast["statements"]:
-            evaluate(statement, environment)
-        return None
+            value, status = evaluate(statement, environment)
+            if status is not None:
+                return value, status
+        return None, None
     elif ast["tag"] == "program":
-        evaluate(ast["statements"], environment)
-        return None
+        value, status = evaluate(ast["statements"], environment)
+        if status is not None:
+            return value, status
+        return None, None
     else:
         raise ValueError(f"Unknown AST node: {ast}")
+
+
+def evaluate_value(ast, environment):
+    value, status = evaluate(ast, environment)
+    assert status is None, f"Unexpected status: {status}"
+    return value
 
 
 def test_evaluate():
     print("test evaluate()")
     ast = {"tag": "number", "value": 3}
-    assert evaluate(ast, {}) == 3
+    assert evaluate_value(ast, {}) == 3
 
     ast = {"tag": "true"}
-    assert evaluate(ast, {}) == True
+    assert evaluate_value(ast, {}) == True
 
     ast = {"tag": "false"}
-    assert evaluate(ast, {}) == False
+    assert evaluate_value(ast, {}) == False
 
     ast = {
         "tag": "+",
         "left": {"tag": "number", "value": 3},
         "right": {"tag": "number", "value": 4},
     }
-    assert evaluate(ast, {}) == 7
+    assert evaluate_value(ast, {}) == 7
     ast = {
         "tag": "*",
         "left": {
@@ -149,29 +260,29 @@ def test_evaluate():
         },
         "right": {"tag": "number", "value": 5},
     }
-    assert evaluate(ast, {}) == 35
+    assert evaluate_value(ast, {}) == 35
     tokens = tokenizer.tokenize("3*(4+5)")
     ast, tokens = parser.parse_expression(tokens)
-    assert evaluate(ast, {}) == 27
+    assert evaluate_value(ast, {}) == 27
 
 
 def test_evaluate_environments():
     print("test evaluate() with environments")
     ast = {"tag": "identifier", "value": "x"}
-    assert evaluate(ast, {"x": 3}) == 3
+    assert evaluate_value(ast, {"x": 3}) == 3
     tokens = tokenizer.tokenize("3*(x+5)")
     ast, tokens = parser.parse_expression(tokens)
     environment = {"x": 4}
-    assert evaluate(ast, environment) == 27
+    assert evaluate_value(ast, environment) == 27
     try:
-        assert evaluate(ast, {}) == 27
+        assert evaluate_value(ast, {}) == 27
         assert True, "Failed to raise error for undefined identifier"
     except Exception as e:
         assert True, f"Unknown identifier in {str(e)}"
     tokens = tokenizer.tokenize("x*(z+y)")
     ast, tokens = parser.parse_expression(tokens)
     environment = {"$PARENT": {"z": 5}, "x": 4, "y": 3}
-    assert evaluate(ast, environment) == 32
+    assert evaluate_value(ast, environment) == 32
     tokens = tokenizer.tokenize("x*(z+y)")
     ast, tokens = parser.parse_expression(tokens)
     environment = {
@@ -181,14 +292,14 @@ def test_evaluate_environments():
         "x": 4,
         "y": 3,
     }
-    assert evaluate(ast, environment) == 32
+    assert evaluate_value(ast, environment) == 32
 
 
 def test_evaluate_assignments():
     tokens = tokenizer.tokenize("z=3*(x+5)")
     ast, tokens = parser.parse_statement(tokens)
     environment = {"x": 4}
-    assert evaluate(ast, environment) == None
+    assert evaluate_value(ast, environment) == None
     print(environment)
     assert environment == {"x": 4, "z": 27}
 
@@ -197,111 +308,111 @@ def test_evaluate_comparisons():
     print("test evaluate() comparisons")
     tokens = tokenizer.tokenize("3 == 3")
     ast, tokens = parser.parse_expression(tokens)
-    assert evaluate(ast, {}) == True
+    assert evaluate_value(ast, {}) == True
 
     tokens = tokenizer.tokenize("3 != 4")
     ast, tokens = parser.parse_expression(tokens)
-    assert evaluate(ast, {}) == True
+    assert evaluate_value(ast, {}) == True
 
     tokens = tokenizer.tokenize("3 < 4")
     ast, tokens = parser.parse_expression(tokens)
-    assert evaluate(ast, {}) == True
+    assert evaluate_value(ast, {}) == True
 
     tokens = tokenizer.tokenize("3 <= 3")
     ast, tokens = parser.parse_expression(tokens)
-    assert evaluate(ast, {}) == True
+    assert evaluate_value(ast, {}) == True
 
     tokens = tokenizer.tokenize("5 > 3")
     ast, tokens = parser.parse_expression(tokens)
-    assert evaluate(ast, {}) == True
+    assert evaluate_value(ast, {}) == True
 
     tokens = tokenizer.tokenize("5 >= 5")
     ast, tokens = parser.parse_expression(tokens)
-    assert evaluate(ast, {}) == True
+    assert evaluate_value(ast, {}) == True
 
 
 def test_evaluate_unary():
     print("test evaluate() unary")
     tokens = tokenizer.tokenize("-3")
     ast, tokens = parser.parse_expression(tokens)
-    assert evaluate(ast, {}) == -3
+    assert evaluate_value(ast, {}) == -3
 
     tokens = tokenizer.tokenize("--3")
     ast, tokens = parser.parse_expression(tokens)
-    assert evaluate(ast, {}) == 3
+    assert evaluate_value(ast, {}) == 3
 
 
 def test_evaluate_logic():
     print("test evaluate() logic")
     tokens = tokenizer.tokenize("1 and 1")
     ast, tokens = parser.parse_expression(tokens)
-    assert evaluate(ast, {}) == True
+    assert evaluate_value(ast, {}) == True
 
     tokens = tokenizer.tokenize("1 and 0")
     ast, tokens = parser.parse_expression(tokens)
-    assert evaluate(ast, {}) == False
+    assert evaluate_value(ast, {}) == False
 
     tokens = tokenizer.tokenize("0 and 1")
     ast, tokens = parser.parse_expression(tokens)
-    assert evaluate(ast, {}) == False
+    assert evaluate_value(ast, {}) == False
 
     tokens = tokenizer.tokenize("0 or 1")
     ast, tokens = parser.parse_expression(tokens)
-    assert evaluate(ast, {}) == True
+    assert evaluate_value(ast, {}) == True
 
     tokens = tokenizer.tokenize("0 or 0")
     ast, tokens = parser.parse_expression(tokens)
-    assert evaluate(ast, {}) == False
+    assert evaluate_value(ast, {}) == False
 
     tokens = tokenizer.tokenize("not 1")
     ast, tokens = parser.parse_expression(tokens)
-    assert evaluate(ast, {}) == False
+    assert evaluate_value(ast, {}) == False
 
     tokens = tokenizer.tokenize("not 0")
     ast, tokens = parser.parse_expression(tokens)
-    assert evaluate(ast, {}) == True
+    assert evaluate_value(ast, {}) == True
 
     tokens = tokenizer.tokenize("true and true")
     ast, tokens = parser.parse_expression(tokens)
-    assert evaluate(ast, {}) == True
+    assert evaluate_value(ast, {}) == True
 
     tokens = tokenizer.tokenize("true and false")
     ast, tokens = parser.parse_expression(tokens)
-    assert evaluate(ast, {}) == False
+    assert evaluate_value(ast, {}) == False
 
     tokens = tokenizer.tokenize("false or false")
     ast, tokens = parser.parse_expression(tokens)
-    assert evaluate(ast, {}) == False
+    assert evaluate_value(ast, {}) == False
 
     tokens = tokenizer.tokenize("not true")
     ast, tokens = parser.parse_expression(tokens)
-    assert evaluate(ast, {}) == False
+    assert evaluate_value(ast, {}) == False
 
     tokens = tokenizer.tokenize("not false")
     ast, tokens = parser.parse_expression(tokens)
-    assert evaluate(ast, {}) == True
+    assert evaluate_value(ast, {}) == True
 
 
 def test_evaluate_if_statement():
     tokens = tokenizer.tokenize("if (x>3){y=4}")
     ast, tokens = parser.parse_statement(tokens)
     environment = {"x": 4}
-    assert evaluate(ast, environment) == None
+    assert evaluate_value(ast, environment) == None
     assert environment == {"x": 4, "y": 4}
     tokens = tokenizer.tokenize("if (x<3){y=4}")
     ast, tokens = parser.parse_statement(tokens)
     environment = {"x": 4}
-    assert evaluate(ast, environment) == None
+    assert evaluate_value(ast, environment) == None
     assert environment == {"x": 4}
     tokens = tokenizer.tokenize("if (x>3){y=4}else{z=4}")
     ast, tokens = parser.parse_statement(tokens)
     environment = {"x": 4}
-    assert evaluate(ast, environment) == None
+    assert evaluate_value(ast, environment) == None
     assert environment == {"x": 4, "y": 4}
     tokens = tokenizer.tokenize("if (x<3){y=4}else{z=4}")
     ast, tokens = parser.parse_statement(tokens)
     environment = {"x": 4}
-    assert evaluate(ast, environment) == None
+    assert evaluate_value(ast, environment) == None
     assert environment == {"x": 4, "z": 4}
 
 
@@ -309,7 +420,7 @@ def test_evaluate_while_statement():
     tokens = tokenizer.tokenize("x=0; while (x<3){x=x+1}")
     ast, tokens = parser.parse_statement_list(tokens)
     environment = {"x": 4}
-    assert evaluate(ast, environment) == None
+    assert evaluate_value(ast, environment) == None
     print(environment)
     assert environment == {"x": 3}
 
@@ -318,7 +429,7 @@ def test_evaluate_function_expression():
     tokens = tokenizer.tokenize("x=function(x){y=1}")
     ast, tokens = parser.parse_statement_list(tokens)
     environment = {"x": 4}
-    assert evaluate(ast, environment) == None
+    assert evaluate_value(ast, environment) == None
     assert environment["x"]["tag"] == "function"
     assert environment["x"]["parameters"] == ["x"]
     assert environment["x"]["environment"] is environment
@@ -338,7 +449,7 @@ def test_evaluate_function_call():
     tokens = tokenizer.tokenize("x=function(x){print(314159);};z=x(2)")
     ast, tokens = parser.parse_statement_list(tokens)
     environment = {"x": 4}
-    assert evaluate(ast, environment) == None
+    assert evaluate_value(ast, environment) == None
     print(environment)
     assert environment["x"]["tag"] == "function"
     assert environment["x"]["environment"] is environment
@@ -366,13 +477,13 @@ def test_evaluate_function_call():
         environment = {}
         tokens = tokenizer.tokenize("f=function(x){print x}")
         ast, tokens = parser.parse_statement_list(tokens)
-        assert evaluate(ast, environment) == None
+        assert evaluate_value(ast, environment) == None
         tokens = tokenizer.tokenize("f(2)")
         ast, tokens = parser.parse_expression(tokens)
-        assert evaluate(ast, environment) == None
+        assert evaluate_value(ast, environment) == None
     assert buffer.getvalue() == "2\n"
 
-    # Dynamic binding should resolve free variables from the caller's environment.
+    # Static binding should resolve free variables from the caller's environment.
     buffer = io.StringIO()
     with contextlib.redirect_stdout(buffer):
         tokens = tokenizer.tokenize(
@@ -380,8 +491,17 @@ def test_evaluate_function_call():
         )
         ast, tokens = parser.parse_statement_list(tokens)
         environment = {}
-        assert evaluate(ast, environment) == None
-    assert buffer.getvalue().splitlines()[0] == "4"
+        assert evaluate_value(ast, environment) == None
+    assert buffer.getvalue().splitlines()[0] == "3"
+    tokens = tokenizer.tokenize("""
+                f=function(){
+                    x = 123
+                };
+                print(1);
+            """)
+    ast, tokens = parser.parse_statement_list(tokens)
+    environment = {}
+    evaluate_value(ast, environment)
     return
 
 

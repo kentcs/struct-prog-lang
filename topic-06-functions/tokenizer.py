@@ -30,6 +30,10 @@ patterns = [
     # ===== TOPIC-05 CHANGES: Added function and return keywords =====
     (r"function\b", "function"),
     (r"return\b", "return"),
+    (r"break\b", "break"),
+    (r"continue\b", "continue"),
+    (r"raise\b", "raise"),
+    (r"exit\b", "exit"),
     # ===== END TOPIC-05 CHANGES =====
     (r"print\b", "print"),
     (r"true\b", "true"),
@@ -111,7 +115,7 @@ def test_operators():
 
 def test_keywords():
     print("test tokenize keywords")
-    code = "print or and not true false if else while"
+    code = "print or and not true false if else while return break continue exit raise"
     tokens = tokenize(code)
     tags = [token["tag"] for token in tokens]
     assert tags == code.split(" ") + [None]
