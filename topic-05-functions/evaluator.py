@@ -344,7 +344,14 @@ def test_evaluate_function_call():
     assert environment["x"]["environment"] is environment
     assert environment["z"] == None
     environment = {"x": 4}
-    tokens = tokenizer.tokenize("x=function(x,y){print(314159)}")
+    tokens = tokenizer.tokenize("f=function(x,y){print(314159)}")
+    ast, tokens = parser.parse_statement_list(tokens)
+    assert evaluate(ast, environment) == None
+    tokens = tokenizer.tokenize("z=f(012345,67890)")
+    ast, tokens = parser.parse_statement_list(tokens)
+    assert evaluate(ast, environment) == None
+
+    tokens = tokenizer.tokenize("f=function(q,r){print(q+r)}")
     ast, tokens = parser.parse_statement_list(tokens)
     evaluate(ast, environment)
     tokens = tokenizer.tokenize("x(y,67890)")
