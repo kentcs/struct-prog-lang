@@ -379,7 +379,7 @@ def test_evaluate_function_call():
         assert evaluate(ast, environment) == None
     assert buffer.getvalue() == "2\n"
 
-    # Dynamic binding should resolve free variables from the caller's environment.
+    # Static binding should resolve free variables from the caller's environment.
     buffer = io.StringIO()
     with contextlib.redirect_stdout(buffer):
         tokens = tokenizer.tokenize(
@@ -388,7 +388,7 @@ def test_evaluate_function_call():
         ast, tokens = parser.parse_statement_list(tokens)
         environment = {}
         assert evaluate(ast, environment) == None
-    assert buffer.getvalue().splitlines()[0] == "4"
+    assert buffer.getvalue().splitlines()[0] == "3"
     return
 
 
