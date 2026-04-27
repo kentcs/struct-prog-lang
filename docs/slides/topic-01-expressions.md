@@ -1,6 +1,6 @@
 # Simple Expressions
 
-A short deck about literals, operators, and precedence.
+This deck covers literals, operators, and precedence.
 
 ---
 
@@ -12,11 +12,11 @@ A complete interpreter for PMDAS expressions.
 2 + 3 * 4 - (5 / 2)
 ```
 
-Pipeline: **Tokenizer** → **Parser** → **Evaluator** → **Result**
+Pipeline: **Tokenizer** -> **Parser** -> **Evaluator** -> **Result**
 
 ---
 
-## Goals
+## What To Watch
 
 - Identify expression forms
 - Evaluate expressions step by step
@@ -44,7 +44,7 @@ Pipeline: **Tokenizer** → **Parser** → **Evaluator** → **Result**
 
 ## The Tokenizer (aka Lexer or Scanner)
 
-Converts raw text into a stream of tokens.
+Takes raw text and turns it into tokens.
 
 ---
 
@@ -93,7 +93,7 @@ A sequence of tokens with metadata:
 
 ## EBNF (for grammar)
 
-- Describes how tokens form valid expressions
+- Shows how tokens form valid expressions
 - Uses recursion to model nesting and precedence
 - Can express balanced parentheses, e.g. `"(" expr ")"`
 - Unlike regex, EBNF can enforce balanced structures
@@ -102,7 +102,7 @@ A sequence of tokens with metadata:
 
 ## Parser Strategy
 
-Uses recursive descent parsing:
+The parser uses recursive descent:
 
 ```
 expression = term { ("+" | "-") term }
@@ -114,10 +114,10 @@ factor     = number | "(" expression ")"
 
 ## Precedence Guarantee
 
-The grammar automatically ensures:
+This grammar gives you:
 
-- `2 + 3 * 4` → `2 + (3 * 4)` ✓
-- `(2 + 3) * 4` → `(2 + 3) * 4` ✓
+- `2 + 3 * 4` -> `2 + (3 * 4)`
+- `(2 + 3) * 4` -> `(2 + 3) * 4`
 
 ---
 
@@ -337,7 +337,7 @@ Evaluate:
 ## Component Interaction
 
 ```
-Source Code → Tokenizer → Parser → Evaluator → Result
+Source Code -> Tokenizer -> Parser -> Evaluator -> Result
 ```
 
 Each component:
@@ -360,4 +360,3 @@ Each component:
 Python, JavaScript, Go, Java, C...
 
 Any language uses this same pipeline structure.
-

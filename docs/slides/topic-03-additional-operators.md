@@ -4,7 +4,7 @@ Comparison and logical operators for richer expressions.
 
 ---
 
-## Extending Topic 02
+## From Topic 02
 
 Topic 02:
 - Variables

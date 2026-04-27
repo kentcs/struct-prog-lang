@@ -4,7 +4,7 @@ Function calls, parameters, and environments.
 
 ---
 
-## What This Topic Adds
+## What Changes
 
 - Function expressions
 - Function calls

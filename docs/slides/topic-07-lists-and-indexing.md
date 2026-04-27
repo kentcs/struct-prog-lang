@@ -4,7 +4,7 @@ Assignment grows from names to list elements.
 
 ---
 
-## What This Topic Adds
+## What Changes
 
 - Assignment expressions
 - List literals
@@ -15,7 +15,7 @@ Assignment grows from names to list elements.
 
 ## The Assignment Model
 
-The grammar now treats assignment as an expression:
+Assignment is now an expression:
 
 ```text
 assignment_expression = [ "extern" ] logical_expression [ "=" assignment_expression ]
@@ -37,7 +37,7 @@ x[1] = 27;
 ```
 
 Because `statement` accepts `expression`, the parser does not need a
-special “assignment statement” rule here.
+special "assignment statement" rule here.
 
 ---
 
@@ -65,7 +65,7 @@ Trivial list literals look like this:
 [[1,2], [3,4]]
 ```
 
-The key idea is that a list value can contain many values in order.
+A list value just holds many values in order.
 
 ---
 
@@ -118,7 +118,7 @@ x[0]
 x[1][0]
 ```
 
-The parser treats `[` after an expression as indexing, not a new list literal.
+When `[` comes after an expression, the parser reads it as indexing, not a new list literal.
 
 ---
 

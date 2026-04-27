@@ -4,7 +4,7 @@ Return, break, continue, and exit need more than a plain value.
 
 ---
 
-## What This Topic Adds
+## What Changes
 
 - `return`
 - `break`
@@ -16,7 +16,7 @@ Return, break, continue, and exit need more than a plain value.
 
 ## The Problem
 
-Some statements do not just produce a value.
+Some statements do more than produce a value.
 
 They change control flow:
 
@@ -234,7 +234,7 @@ Function calls must:
 - run the body
 - consume `return`
 
-That is how call results are produced.
+That is how a function call returns its result.
 
 Example:
 

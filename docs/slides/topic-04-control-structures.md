@@ -4,7 +4,7 @@ Adding branching and loops to build real program flow.
 
 ---
 
-## Extending Topic 03
+## From Topic 03
 
 Topic 03:
 - Arithmetic, comparison, and logical expressions
@@ -20,7 +20,7 @@ Topic 04:
 
 ## Why Control Structures?
 
-Without control flow, every statement runs exactly once in order.
+Without control flow, every statement runs once in order.
 
 Control structures let programs:
 
@@ -151,7 +151,7 @@ Other value types in boolean context are runtime errors.
 
 ## Evaluation: If
 
-Conceptually:
+What it does:
 
 1. Evaluate condition
 2. Convert to truth value
@@ -164,7 +164,7 @@ Result of an `if` statement is `None`.
 
 ## Evaluation: While
 
-Conceptually:
+What it does:
 
 1. Evaluate condition
 2. If falsy, stop loop
@@ -212,7 +212,7 @@ statement =
   | assignment_statement
 ```
 
-This is the key parser extension from Topic 03 to Topic 04.
+This is the parser change that adds `if` and `while`.
 
 ---
 
