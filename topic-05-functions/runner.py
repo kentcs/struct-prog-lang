@@ -8,11 +8,10 @@ if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: python runner.py <expression>")
         sys.exit(1)
-    expression = sys.argv[1]
-    if expression.endswith(".t"):
-        with open(expression, "r") as f:
-            expression = f.read().strip()
-    tokens = tokenize(expression)
+    program = sys.argv[1]
+    if program.endswith(".t"):
+        with open(program, "r") as f:
+            program = f.read().strip()
+    tokens = tokenize(program)
     ast = parse(tokens)
-    result = evaluate(ast, {"x": 3})
-    print(result)
+    evaluate(ast, {})

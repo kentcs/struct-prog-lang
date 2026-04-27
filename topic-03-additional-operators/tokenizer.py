@@ -1,25 +1,28 @@
 import re
 from pprint import pprint
 
-# p = re.compile("ab*")
-
-# if p.match("abbbbbbb") :
-#     print("match")
-# else:
-#     print("not match")
-
 patterns = [
     (r"\s+", "whitespace"),
     (r"\d+", "number"),
+    (r"==", "=="),
+    (r"!=", "!="),
+    (r"<=", "<="),
+    (r">=", ">="),
     (r"\+", "+"),
     (r"\-", "-"),
     (r"\/", "/"),
     (r"\*", "*"),
     (r"\(", "("),
     (r"\)", ")"),
+    (r"\{", "{"),
+    (r"\}", "}"),
     (r"\=", "="),
-    (r"\;", ";"),
     (r"print\b", "print"),
+    (r"true\b", "true"),
+    (r"false\b", "false"),
+    (r"or\b", "or"),
+    (r"and\b", "and"),
+    (r"not\b", "not"),
     (r"[a-zA-Z_][\w]*", "identifier"),
     (r".", "error"),
 ]
@@ -82,16 +85,18 @@ def test_digits():
 
 def test_operators():
     print("test tokenize operators")
-    t = tokenize("+ - * / ( ) = ;")
+    t = tokenize("+ - * / ( ) =")
     tags = [tok["tag"] for tok in t]
-    assert tags == ["+", "-", "*", "/", "(", ")", "=", ";", None]
+    assert tags == ["+", "-", "*", "/", "(", ")", "=", None]
 
 
 def test_keywords():
     print("test tokenize keywords")
-    t = tokenize("print")
-    tags = [tok["tag"] for tok in t]
-    assert tags == ["print", None]
+    code = "print or and not true false"
+    tokens = tokenize(code)
+    tags = [token["tag"] for token in tokens]
+    assert tags == code.split(" ") + [None]
+
 
 
 def test_identifiers():
