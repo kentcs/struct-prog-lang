@@ -4,7 +4,7 @@ Building on expressions: programs, variables, and side effects.
 
 ---
 
-## Extending Topic 01
+## From Topic 01
 
 Topic 01:
 - Expressions
@@ -51,7 +51,7 @@ Return value: None
 
 ## Programs
 
-A program is a sequence of statements.
+A program is just a sequence of statements.
 
 ```
 x = 10
@@ -71,7 +71,7 @@ print 1; print 2; print 3
 
 An environment maps variable names to values.
 
-Initially:
+At the start:
 
 ```
 {}
